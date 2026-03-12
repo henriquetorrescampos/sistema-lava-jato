@@ -1,0 +1,19 @@
+{
+  "name": "autoshine-marketplace",
+  "version": "1.0.0",
+  "description": "Marketplace web responsivo para lava jato e estetica automotiva",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "marketplace",
+    "lava-jato",
+    "html",
+    "css",
+    "javascript",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT"
+}
