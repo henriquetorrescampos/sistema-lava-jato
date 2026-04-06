@@ -1,0 +1,112 @@
+// Schema Prisma - Sistema Lave Já
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// USUÁRIO
+model Usuario {
+  id       Int    @id @default(autoincrement()) @map("id_usuario")
+  nome     String
+  email    String @unique
+  telefone String
+
+  veiculos     Veiculo[]
+  agendamentos Agendamento[]
+
+  @@map("usuarios")
+}
+
+// VEÍCULO
+model Veiculo {
+  id     Int    @id @default(autoincrement()) @map("id_veiculo")
+  modelo String
+  marca  String
+  placa  String @unique
+
+  usuarioId Int     @map("id_usuario")
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+
+  agendamentos Agendamento[]
+  avaliacoes   Avaliacao[]
+
+  @@map("veiculos")
+}
+
+// AGENDAMENTO
+model Agendamento {
+  id     Int      @id @default(autoincrement()) @map("id_agendamento")
+  data   DateTime
+  hora   String
+  status String   @default("pendente")
+
+  usuarioId Int     @map("id_usuario")
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+
+  veiculoId Int     @map("id_veiculo")
+  veiculo   Veiculo @relation(fields: [veiculoId], references: [id])
+
+  servicos  AgendamentoServico[]
+  pagamento Pagamento?
+
+  @@map("agendamentos")
+}
+
+// Tabela associativa N:N entre AGENDAMENTO e SERVIÇO (REALIZA)
+model AgendamentoServico {
+  agendamentoId Int         @map("id_agendamento")
+  agendamento   Agendamento @relation(fields: [agendamentoId], references: [id])
+
+  servicoId Int     @map("id_servico")
+  servico   Servico @relation(fields: [servicoId], references: [id])
+
+  @@id([agendamentoId, servicoId])
+  @@map("agendamento_servicos")
+}
+
+// SERVIÇO
+model Servico {
+  id        Int    @id @default(autoincrement()) @map("id_servico")
+  nome      String
+  descricao String
+  preco     Float
+
+  agendamentos AgendamentoServico[]
+  avaliacoes   Avaliacao[]
+
+  @@map("servicos")
+}
+
+// PAGAMENTO
+model Pagamento {
+  id              Int    @id @default(autoincrement()) @map("id_pagamento")
+  valor           Float
+  formaPagamento  String @map("forma_pagamento")
+
+  agendamentoId Int         @unique @map("id_agendamento")
+  agendamento   Agendamento @relation(fields: [agendamentoId], references: [id])
+
+  @@map("pagamentos")
+}
+
+// AVALIAÇÃO
+model Avaliacao {
+  id         Int      @id @default(autoincrement()) @map("id_avaliacao")
+  nota       Int
+  comentario String
+  data       DateTime @default(now())
+
+  servicoId Int     @map("id_servico")
+  servico   Servico @relation(fields: [servicoId], references: [id])
+
+  veiculoId Int     @map("id_veiculo")
+  veiculo   Veiculo @relation(fields: [veiculoId], references: [id])
+
+  @@map("avaliacoes")
+}
