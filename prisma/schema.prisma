@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           Int            @id @default(autoincrement())
+  nome         String
+  email        String         @unique
+  cpf          String         @unique
+  telefone     String
+  senha        String
+  createdAt    DateTime       @default(now())
+  veiculos     Veiculo[]
+  agendamentos Agendamento[]
+}
+
+model Veiculo {
+  id        Int      @id @default(autoincrement())
+  placa     String
+  modelo    String
+  cor       String
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Servico {
+  id                  Int                  @id @default(autoincrement())
+  nome                String
+  descricao           String
+  preco               Float
+  agendamentoServicos AgendamentoServico[]
+}
+
+model Agendamento {
+  id                  Int                  @id @default(autoincrement())
+  data                DateTime
+  status              String               @default("pendente")
+  usuarioId           Int
+  usuario             Usuario              @relation(fields: [usuarioId], references: [id])
+  servicos            AgendamentoServico[]
+  pagamento           Pagamento?
+  avaliacao           Avaliacao?
+}
+
+model AgendamentoServico {
+  id             Int         @id @default(autoincrement())
+  agendamentoId  Int
+  servicoId      Int
+  agendamento    Agendamento @relation(fields: [agendamentoId], references: [id])
+  servico        Servico     @relation(fields: [servicoId], references: [id])
+}
+
+model Pagamento {
+  id             Int         @id @default(autoincrement())
+  valor          Float
+  metodo         String
+  status         String      @default("pendente")
+  agendamentoId  Int         @unique
+  agendamento    Agendamento @relation(fields: [agendamentoId], references: [id])
+}
+
+model Avaliacao {
+  id             Int         @id @default(autoincrement())
+  nota           Int
+  comentario     String?
+  agendamentoId  Int         @unique
+  agendamento    Agendamento @relation(fields: [agendamentoId], references: [id])
+}
