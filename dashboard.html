@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - AutoShine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body data-page="dashboard">
+  <div class="bg-decor"></div>
+  <main class="dashboard-layout container reveal-root">
+    <aside class="dash-sidebar reveal-item">
+      <a class="brand" href="index.html">
+        <span class="brand-dot"></span>
+        <span>AutoShine</span>
+      </a>
+      <nav>
+        <a class="active" href="#">Visao geral</a>
+        <a href="#">Agendamentos</a>
+        <a href="#">Servicos</a>
+        <a href="#">Avaliacoes</a>
+        <a href="#">Usuarios</a>
+      </nav>
+    </aside>
+
+    <section class="dash-content reveal-item">
+      <header class="dash-head">
+        <h1>Dashboard do lava jato</h1>
+        <a href="index.html" class="btn btn-ghost">Ir para marketplace</a>
+      </header>
+
+      <div class="metrics-grid">
+        <article class="metric-card">
+          <h3>Agendamentos hoje</h3>
+          <p class="metric-value">24</p>
+        </article>
+        <article class="metric-card">
+          <h3>Faturamento diario</h3>
+          <p class="metric-value">R$ 3.680</p>
+        </article>
+        <article class="metric-card">
+          <h3>Avaliacao media</h3>
+          <p class="metric-value">4.8</p>
+        </article>
+      </div>
+
+      <div class="dash-grid">
+        <article class="panel">
+          <div class="section-head">
+            <h2>Servicos cadastrados</h2>
+            <button class="btn btn-primary">Adicionar novo servico</button>
+          </div>
+          <ul class="service-list">
+            <li>Lavagem simples - R$ 49</li>
+            <li>Lavagem completa - R$ 89</li>
+            <li>Higienizacao interna - R$ 159</li>
+            <li>Polimento - R$ 220</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h2>Calendario de agendamentos</h2>
+          <div class="calendar-grid">
+            <span>08:00 - 1 vaga</span>
+            <span>09:30 - 2 vagas</span>
+            <span>11:00 - lotado</span>
+            <span>13:30 - 1 vaga</span>
+            <span>15:00 - 3 vagas</span>
+            <span>16:30 - 2 vagas</span>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>Avaliacoes recebidas</h2>
+          <p><span class="stars">&#9733; 4.8</span> 1.240 avaliacoes</p>
+          <p>"Excelente atendimento" - Cliente Joao</p>
+          <p>"Resultado impecavel" - Cliente Ana</p>
+        </article>
+
+        <article class="panel">
+          <h2>Desempenho semanal</h2>
+          <div class="bars">
+            <div class="bar" style="--h: 45%"><span>Seg</span></div>
+            <div class="bar" style="--h: 62%"><span>Ter</span></div>
+            <div class="bar" style="--h: 58%"><span>Qua</span></div>
+            <div class="bar" style="--h: 75%"><span>Qui</span></div>
+            <div class="bar" style="--h: 88%"><span>Sex</span></div>
+            <div class="bar" style="--h: 68%"><span>Sab</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
