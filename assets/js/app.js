@@ -1,6 +1,7 @@
 const page = document.body.dataset.page;
 const usersStorageKey = "autoshine:users";
 const currentUserStorageKey = "autoshine:current-user";
+const authTokenStorageKey = "autoshine:token";
 
 function getUsersFromStorage() {
   const raw = localStorage.getItem(usersStorageKey);
@@ -29,8 +30,17 @@ function getCurrentUser() {
   }
 }
 
-function setCurrentUser(user) {
+function setCurrentUser(user, token) {
   localStorage.setItem(currentUserStorageKey, JSON.stringify(user));
+  if (token) {
+    localStorage.setItem(authTokenStorageKey, token);
+  } else {
+    localStorage.removeItem(authTokenStorageKey);
+  }
+}
+
+function getAuthToken() {
+  return localStorage.getItem(authTokenStorageKey);
 }
 
 function getReturnUrl() {
@@ -872,11 +882,10 @@ function initAuthPage() {
         return;
       }
 
-      setCurrentUser({
-        name: data.user.nome,
-        email: data.user.email,
-        authProvider: "email",
-      });
+      setCurrentUser(
+        { name: data.user.nome, email: data.user.email, authProvider: "email" },
+        data.token,
+      );
       alert("Login realizado com sucesso.");
       window.location.href = normalizedNextUrl();
     } catch (err) {
@@ -953,11 +962,10 @@ function initAuthPage() {
         return;
       }
 
-      setCurrentUser({
-        name: data.user.nome,
-        email: data.user.email,
-        authProvider: "email",
-      });
+      setCurrentUser(
+        { name: data.user.nome, email: data.user.email, authProvider: "email" },
+        data.token,
+      );
       alert("Cadastro realizado com sucesso. Bem-vindo ao AutoShine.");
       signupForm.reset();
       window.location.href = normalizedNextUrl();

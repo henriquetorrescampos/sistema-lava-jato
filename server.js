@@ -6,10 +6,22 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const dotenv = require("dotenv");
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 dotenv.config();
 
 const prisma = new PrismaClient();
+const jwtSecret =
+  process.env.JWT_SECRET || "autoshine-jwt-secret-mude-em-producao";
+const jwtExpiresIn = "7d";
+
+function gerarToken(usuario) {
+  return jwt.sign(
+    { id: usuario.id, nome: usuario.nome, email: usuario.email },
+    jwtSecret,
+    { expiresIn: jwtExpiresIn },
+  );
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -162,7 +174,9 @@ app.post("/api/auth/signup", async (req, res) => {
     });
 
     req.session.userId = usuario.id;
+    const token = gerarToken(usuario);
     res.status(201).json({
+      token,
       user: { id: usuario.id, nome: usuario.nome, email: usuario.email },
     });
   } catch (err) {
@@ -187,7 +201,9 @@ app.post("/api/auth/login", async (req, res) => {
     }
 
     req.session.userId = usuario.id;
+    const token = gerarToken(usuario);
     res.json({
+      token,
       user: { id: usuario.id, nome: usuario.nome, email: usuario.email },
     });
   } catch (err) {
