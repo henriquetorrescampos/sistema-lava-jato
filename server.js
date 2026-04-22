@@ -8,19 +8,32 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
 dotenv.config();
 
-const prisma = new PrismaClient();
+let prisma;
+try {
+  prisma = new PrismaClient();
+} catch (error) {
+  console.error("Erro ao conectar ao banco de dados:", error);
+  process.exit(1);
+}
 const jwtSecret =
   process.env.JWT_SECRET || "autoshine-jwt-secret-mude-em-producao";
-const jwtExpiresIn = "7d";
+const jwtExpiresIn = "15m"; // access token 15 min
+const refreshTokenExpiresIn = "7d"; // refresh token 7 dias
 
-function gerarToken(usuario) {
+
+function gerarAccessToken(usuario) {
   return jwt.sign(
     { id: usuario.id, nome: usuario.nome, email: usuario.email },
     jwtSecret,
     { expiresIn: jwtExpiresIn },
   );
+}
+
+function gerarRefreshToken() {
+  return jwt.sign({}, jwtSecret, { expiresIn: refreshTokenExpiresIn });
 }
 
 const app = express();
@@ -146,70 +159,134 @@ app.get("/api/auth/config", (_req, res) => {
 });
 app.use(express.json());
 
-// ── Cadastro ──
-app.post("/api/auth/signup", async (req, res) => {
+// ── Registro ──
+app.post("/api/register", async (req, res) => {
   try {
-    const { nome, email, cpf, telefone, senha } = req.body;
+    const { email, senha } = req.body;
 
-    if (!nome || !email || !cpf || !telefone || !senha) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos são obrigatórios." });
+    if (!email || !senha) {
+      return res.status(400).json({ error: "Email e senha são obrigatórios." });
     }
 
-    const existente = await prisma.usuario.findFirst({
-      where: { OR: [{ email }, { cpf }] },
-    });
+    // Validar formato do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Formato de email inválido." });
+    }
 
+    // Validar senha mínimo 8 caracteres
+    if (senha.length < 8) {
+      return res.status(400).json({ error: "A senha deve ter pelo menos 8 caracteres." });
+    }
+
+    // Verificar se email já existe
+    const existente = await prisma.usuario.findUnique({ where: { email } });
     if (existente) {
-      return res
-        .status(409)
-        .json({ error: "Já existe um cadastro com este email ou CPF." });
+      return res.status(409).json({ error: "Email já cadastrado." });
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);
 
     const usuario = await prisma.usuario.create({
-      data: { nome, email, cpf, telefone, senha: senhaHash },
+      data: { nome: "", email, cpf: "", telefone: "", senha: senhaHash },
     });
 
-    req.session.userId = usuario.id;
-    const token = gerarToken(usuario);
-    res.status(201).json({
-      token,
-      user: { id: usuario.id, nome: usuario.nome, email: usuario.email },
-    });
+    res.status(201).json({ message: "Usuário registrado com sucesso." });
   } catch (err) {
-    console.error("Erro no cadastro:", err);
-    res.status(500).json({ error: "Erro interno ao criar conta." });
+    console.error("Erro no registro:", err);
+    res.status(500).json({ error: "Erro interno ao registrar." });
   }
 });
 
 // ── Login ──
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
-      return res.status(400).json({ error: "Informe email e senha." });
+      return res.status(400).json({ error: "Email e senha são obrigatórios." });
     }
 
     const usuario = await prisma.usuario.findUnique({ where: { email } });
-
     if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
-      return res.status(401).json({ error: "Email ou senha inválidos." });
+      return res.status(401).json({ error: "Credenciais inválidas." });
     }
 
+    // Gerar access token (15min)
+    const accessToken = gerarAccessToken(usuario);
+
+    // Gerar refresh token (7 dias)
+    const refreshToken = gerarRefreshToken();
+
+    // Salvar refresh token no banco
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 dias
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        usuarioId: usuario.id,
+        expiresAt,
+      },
+    });
+
+    // Criar sessão
     req.session.userId = usuario.id;
-    const token = gerarToken(usuario);
+
     res.json({
-      token,
+      accessToken,
+      refreshToken,
       user: { id: usuario.id, nome: usuario.nome, email: usuario.email },
     });
   } catch (err) {
     console.error("Erro no login:", err);
     res.status(500).json({ error: "Erro interno ao fazer login." });
   }
+});
+
+// ── Logout ──
+app.post("/api/logout", async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ error: "Refresh token é obrigatório." });
+    }
+
+    // Remover refresh token do banco
+    await prisma.refreshToken.deleteMany({
+      where: { token: refreshToken },
+    });
+
+    // Destruir sessão
+    req.session.destroy();
+
+    res.json({ message: "Logout realizado com sucesso." });
+  } catch (err) {
+    console.error("Erro no logout:", err);
+    res.status(500).json({ error: "Erro interno ao fazer logout." });
+  }
+});
+
+// Middleware de autenticação
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Access token é obrigatório." });
+  }
+
+  jwt.verify(token, jwtSecret, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: "Access token inválido." });
+    }
+    req.user = user;
+    next();
+  });
+}
+
+// ── Área Logada (exemplo) ──
+app.get("/api/protected", authenticateToken, (req, res) => {
+  res.json({ message: "Área protegida acessada.", user: req.user });
 });
 app.use(express.static(baseDir));
 

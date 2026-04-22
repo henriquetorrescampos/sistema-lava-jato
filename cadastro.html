@@ -39,9 +39,11 @@
       </div>
 
       <div id="login-panel" class="auth-panel">
-        <button id="google-login-btn" class="btn btn-google" type="button">Entrar com Google</button>
+      <button id="google-login-btn" class="btn btn-google" type="button" onclick="entrarComGoogle()" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Entrar com Google
+      </button>
         <p class="auth-separator"><span>ou entre com email e senha</span></p>
-
+        
         <form id="login-form" class="booking-form" novalidate>
           <div class="field">
             <label for="login-email">Email</label>
@@ -58,7 +60,9 @@
       </div>
 
       <div id="signup-panel" class="auth-panel hidden">
-      <button id="google-signup-btn" class="btn btn-google" type="button">Continuar com Google</button>
+      <button id="google-signup-btn" class="btn btn-google" type="button" onclick="cadastrarComGoogle()" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Continuar com Google
+      </button>
       <p class="auth-separator"><span>ou preencha seus dados</span></p>
 
       <form id="signup-form" class="booking-form" novalidate>

@@ -9,14 +9,24 @@ datasource db {
 
 model Usuario {
   id           Int            @id @default(autoincrement())
-  nome         String
+  nome         String?
   email        String         @unique
-  cpf          String         @unique
-  telefone     String
+  cpf          String?
+  telefone     String?
   senha        String
   createdAt    DateTime       @default(now())
   veiculos     Veiculo[]
   agendamentos Agendamento[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Veiculo {

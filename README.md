@@ -41,10 +41,11 @@ http://localhost:3000/auth/google/callback
 
 ```env
 PORT=3000
-SESSION_SECRET=sua-chave-segura
-GOOGLE_CLIENT_ID=seu-client-id
-GOOGLE_CLIENT_SECRET=seu-client-secret
+SESSION_SECRET=uma_frase_bem_longa_e_aleatoria_123
+GOOGLE_CLIENT_ID=447228936649-43lr13i41pdl1pucmrir6ig0e4jfbted.apps googleusercontent.com
+GOOGLE_CLIENT_SECRET=****A7N6
 GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+DATABASE_URL="file:./dev.db"
 ```
 
 4. Reinicie o servidor e use o botao `Continuar com Google` na tela `cadastro.html`.
