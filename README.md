@@ -7,8 +7,12 @@ Projeto de design responsivo para marketplace de lava jato e estetica automotiva
 - HTML5
 - CSS3
 - JavaScript (vanilla)
+<<<<<<< HEAD
 - Node.js + Express
 - Passport Google OAuth 2.0
+=======
+- Node.js (servidor estatico sem dependencias)
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
 
 ## Telas implementadas
 
@@ -22,12 +26,17 @@ Projeto de design responsivo para marketplace de lava jato e estetica automotiva
 ## Executar localmente
 
 ```bash
+<<<<<<< HEAD
 npm install
 npm run dev
+=======
+node server.js
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
 ```
 
 Acesse no navegador: `http://localhost:3000`
 
+<<<<<<< HEAD
 ## Login com Google (OAuth real)
 
 1. Crie credenciais OAuth no Google Cloud Console.
@@ -56,3 +65,10 @@ DATABASE_URL="file:./dev.db"
 - `assets/js/app.js` - interacoes (filtros, mapa, agendamento, avaliacoes e cadastro)
 - `server.js` - servidor Express com sessoes e autenticacao Google
 - `.env.example` - modelo de configuracao de variaveis de ambiente
+=======
+## Estrutura
+
+- `assets/css/styles.css` - estilo global e responsividade
+- `assets/js/app.js` - interacoes (filtros, mapa e agendamento)
+- `server.js` - servidor Node para servir arquivos estaticos
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b

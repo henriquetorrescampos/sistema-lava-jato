@@ -1,4 +1,5 @@
 const page = document.body.dataset.page;
+<<<<<<< HEAD
 const usersStorageKey = "autoshine:users";
 const currentUserStorageKey = "autoshine:current-user";
 const authTokenStorageKey = "autoshine:token";
@@ -90,32 +91,71 @@ function initCategoryFilter() {
       const services = card.dataset.services || "";
       const visible = category === "todos" || services.includes(category);
       card.style.display = visible ? "block" : "none";
+=======
+
+function initCategoryFilter() {
+  const categoryList = document.getElementById('category-list');
+  const cards = Array.from(document.querySelectorAll('#shop-grid .shop-card'));
+
+  if (!categoryList || !cards.length) return;
+
+  categoryList.addEventListener('click', (event) => {
+    const button = event.target.closest('.chip');
+    if (!button) return;
+
+    categoryList.querySelectorAll('.chip').forEach((chip) => chip.classList.remove('active'));
+    button.classList.add('active');
+
+    const category = button.dataset.category;
+    cards.forEach((card) => {
+      const services = card.dataset.services || '';
+      const visible = category === 'todos' || services.includes(category);
+      card.style.display = visible ? 'block' : 'none';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     });
   });
 }
 
 function initUseLocation() {
+<<<<<<< HEAD
   const locationButton = document.getElementById("use-location-btn");
   if (!locationButton) return;
 
   locationButton.addEventListener("click", () => {
     if (!navigator.geolocation) {
       alert("Geolocalizacao nao suportada neste navegador.");
+=======
+  const locationButton = document.getElementById('use-location-btn');
+  if (!locationButton) return;
+
+  locationButton.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      alert('Geolocalizacao nao suportada neste navegador.');
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       () => {
+<<<<<<< HEAD
         alert("Localizacao capturada. Atualizando lava jatos proximos.");
       },
       () => {
         alert("Nao foi possivel acessar sua localizacao agora.");
       },
+=======
+        alert('Localizacao capturada. Atualizando lava jatos proximos.');
+      },
+      () => {
+        alert('Nao foi possivel acessar sua localizacao agora.');
+      }
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     );
   });
 }
 
 function initMapInteractions() {
+<<<<<<< HEAD
   const mapElement = document.getElementById("map");
   const filterList = document.getElementById("map-filter-list");
   const locateButton = document.getElementById("map-locate-btn");
@@ -128,19 +168,40 @@ function initMapInteractions() {
   if (!mapElement || !filterList || !shopName || !shopInfo) return;
   if (typeof window.L === "undefined") {
     shopInfo.textContent = "Mapa indisponivel no momento.";
+=======
+  const mapElement = document.getElementById('map');
+  const filterList = document.getElementById('map-filter-list');
+  const locateButton = document.getElementById('map-locate-btn');
+  const routeButton = document.getElementById('map-route-btn');
+  const externalNavButton = document.getElementById('external-nav-btn');
+  const shopName = document.getElementById('shop-name');
+  const shopInfo = document.getElementById('shop-info');
+  const params = new URLSearchParams(window.location.search);
+
+  if (!mapElement || !filterList || !shopName || !shopInfo) return;
+  if (typeof window.L === 'undefined') {
+    shopInfo.textContent = 'Mapa indisponivel no momento.';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     return;
   }
 
   const defaultCenter = [-16.6869, -49.2648];
   const map = L.map(mapElement).setView(defaultCenter, 13);
 
+<<<<<<< HEAD
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap",
+=======
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   }).addTo(map);
 
   const shops = [
     {
+<<<<<<< HEAD
       name: "BlueWash Premium",
       rating: 4.8,
       category: "lavagem",
@@ -158,11 +219,34 @@ function initMapInteractions() {
       category: "detalhamento",
       latlng: [-16.69, -49.28],
     },
+=======
+      name: 'BlueWash Premium',
+      rating: 4.8,
+      category: 'lavagem',
+      latlng: [-16.68, -49.26]
+    },
+    {
+      name: 'BlackCar Studio',
+      rating: 4.7,
+      category: 'higienizacao',
+      latlng: [-16.7, -49.25]
+    },
+    {
+      name: 'Prime Auto Care',
+      rating: 4.9,
+      category: 'detalhamento',
+      latlng: [-16.69, -49.28]
+    }
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   ];
 
   const markerEntries = shops.map((shop) => {
     const marker = L.marker(shop.latlng).addTo(map);
+<<<<<<< HEAD
     marker.on("click", () => {
+=======
+    marker.on('click', () => {
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       clearRoute();
       selectShop(shop, { focus: true });
     });
@@ -174,7 +258,11 @@ function initMapInteractions() {
   let currentUserPosition = null;
   let selectedShop = null;
   let routeLayer = null;
+<<<<<<< HEAD
   let lastRouteSummary = "";
+=======
+  let lastRouteSummary = '';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
 
   function toRad(value) {
     return (value * Math.PI) / 180;
@@ -186,10 +274,15 @@ function initMapInteractions() {
     const dLng = toRad(to[1] - from[1]);
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+<<<<<<< HEAD
       Math.cos(toRad(from[0])) *
         Math.cos(toRad(to[0])) *
         Math.sin(dLng / 2) *
         Math.sin(dLng / 2);
+=======
+      Math.cos(toRad(from[0])) * Math.cos(toRad(to[0])) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return earthRadiusKm * c;
   }
@@ -197,13 +290,21 @@ function initMapInteractions() {
   function formatDistance(from, to) {
     const km = distanceKm(from, to);
     if (km < 1) return `${Math.round(km * 1000)} m`;
+<<<<<<< HEAD
     return `${km.toFixed(1).replace(".", ",")} km`;
+=======
+    return `${km.toFixed(1).replace('.', ',')} km`;
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   }
 
   function formatRouteDistance(meters) {
     const km = meters / 1000;
     if (km < 1) return `${Math.round(meters)} m`;
+<<<<<<< HEAD
     return `${km.toFixed(1).replace(".", ",")} km`;
+=======
+    return `${km.toFixed(1).replace('.', ',')} km`;
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   }
 
   function formatRouteDuration(seconds) {
@@ -218,9 +319,13 @@ function initMapInteractions() {
   function updateExternalNavigationLink(shop) {
     if (!externalNavButton || !shop) return;
     const destination = `${shop.latlng[0]},${shop.latlng[1]}`;
+<<<<<<< HEAD
     const origin = currentUserPosition
       ? `&origin=${currentUserPosition[0]},${currentUserPosition[1]}`
       : "";
+=======
+    const origin = currentUserPosition ? `&origin=${currentUserPosition[0]},${currentUserPosition[1]}` : '';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     externalNavButton.href = `https://www.google.com/maps/dir/?api=1&destination=${destination}${origin}&travelmode=driving`;
   }
 
@@ -229,7 +334,11 @@ function initMapInteractions() {
       map.removeLayer(routeLayer);
       routeLayer = null;
     }
+<<<<<<< HEAD
     lastRouteSummary = "";
+=======
+    lastRouteSummary = '';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   }
 
   function selectShop(shop, options = {}) {
@@ -237,10 +346,17 @@ function initMapInteractions() {
     selectedShop = shop;
     const distance = currentUserPosition
       ? formatDistance(currentUserPosition, shop.latlng)
+<<<<<<< HEAD
       : "distancia indisponivel";
 
     shopName.textContent = shop.name;
     shopInfo.innerHTML = `<span class="stars">&#9733; ${shop.rating.toFixed(1)}</span> • ${distance}${lastRouteSummary ? ` • ${lastRouteSummary}` : ""}`;
+=======
+      : 'distancia indisponivel';
+
+    shopName.textContent = shop.name;
+    shopInfo.innerHTML = `<span class="stars">&#9733; ${shop.rating.toFixed(1)}</span> • ${distance}${lastRouteSummary ? ` • ${lastRouteSummary}` : ''}`;
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     updateExternalNavigationLink(shop);
 
     if (focus) {
@@ -250,7 +366,11 @@ function initMapInteractions() {
 
   function applyFilter(filter) {
     markerEntries.forEach((entry) => {
+<<<<<<< HEAD
       const visible = filter === "todos" || entry.shop.category === filter;
+=======
+      const visible = filter === 'todos' || entry.shop.category === filter;
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       entry.visible = visible;
 
       if (visible && !map.hasLayer(entry.marker)) {
@@ -264,6 +384,7 @@ function initMapInteractions() {
   }
 
   function selectNearestVisibleShop() {
+<<<<<<< HEAD
     const visibleShops = markerEntries
       .filter((entry) => entry.visible)
       .map((entry) => entry.shop);
@@ -271,6 +392,12 @@ function initMapInteractions() {
       shopName.textContent = "Nenhum lava jato neste filtro";
       shopInfo.textContent =
         "Ajuste o filtro para visualizar estabelecimentos.";
+=======
+    const visibleShops = markerEntries.filter((entry) => entry.visible).map((entry) => entry.shop);
+    if (!visibleShops.length) {
+      shopName.textContent = 'Nenhum lava jato neste filtro';
+      shopInfo.textContent = 'Ajuste o filtro para visualizar estabelecimentos.';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       selectedShop = null;
       clearRoute();
       return;
@@ -295,6 +422,7 @@ function initMapInteractions() {
     selectShop(nearestShop, { focus: false });
   }
 
+<<<<<<< HEAD
   filterList.addEventListener("click", (event) => {
     const button = event.target.closest(".chip");
     if (!button) return;
@@ -305,12 +433,23 @@ function initMapInteractions() {
     button.classList.add("active");
 
     applyFilter(button.dataset.filter || "todos");
+=======
+  filterList.addEventListener('click', (event) => {
+    const button = event.target.closest('.chip');
+    if (!button) return;
+
+    filterList.querySelectorAll('.chip').forEach((chip) => chip.classList.remove('active'));
+    button.classList.add('active');
+
+    applyFilter(button.dataset.filter || 'todos');
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     clearRoute();
     selectNearestVisibleShop();
   });
 
   function locateUser(preserveSelection = false) {
     return new Promise((resolve) => {
+<<<<<<< HEAD
       if (!navigator.geolocation) {
         shopInfo.textContent = "Geolocalizacao nao suportada neste navegador.";
         resolve(false);
@@ -370,6 +509,63 @@ function initMapInteractions() {
           maximumAge: 0,
         },
       );
+=======
+    if (!navigator.geolocation) {
+      shopInfo.textContent = 'Geolocalizacao nao suportada neste navegador.';
+      resolve(false);
+      return;
+    }
+
+    shopInfo.textContent = 'Buscando sua localizacao...';
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        currentUserPosition = [position.coords.latitude, position.coords.longitude];
+
+        if (userMarker) {
+          map.removeLayer(userMarker);
+        }
+
+        if (userCircle) {
+          map.removeLayer(userCircle);
+        }
+
+        userMarker = L.marker(currentUserPosition, {
+          icon: L.divIcon({
+            className: 'user-marker-wrapper',
+            html: '<div class="user-marker-dot" aria-hidden="true"></div>',
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+          })
+        }).addTo(map);
+
+        userCircle = L.circle(currentUserPosition, {
+          radius: 250,
+          color: '#27c3ff',
+          fillColor: '#27c3ff',
+          fillOpacity: 0.12,
+          weight: 1
+        }).addTo(map);
+
+        map.flyTo(currentUserPosition, 14, { animate: true, duration: 1 });
+        if (!preserveSelection || !selectedShop) {
+          selectNearestVisibleShop();
+        } else {
+          selectShop(selectedShop, { focus: false });
+        }
+        resolve(true);
+      },
+      () => {
+        shopInfo.textContent = 'Nao foi possivel capturar sua localizacao. Verifique as permissoes.';
+        resolve(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     });
   }
 
@@ -379,7 +575,11 @@ function initMapInteractions() {
     }
 
     if (!selectedShop) {
+<<<<<<< HEAD
       shopInfo.textContent = "Selecione um lava jato para calcular a rota.";
+=======
+      shopInfo.textContent = 'Selecione um lava jato para calcular a rota.';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       return;
     }
 
@@ -393,11 +593,16 @@ function initMapInteractions() {
     const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
 
     try {
+<<<<<<< HEAD
       shopInfo.textContent = "Calculando caminho ate o lava jato...";
+=======
+      shopInfo.textContent = 'Calculando caminho ate o lava jato...';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       const response = await fetch(url);
       const data = await response.json();
 
       if (!response.ok || !data.routes || !data.routes.length) {
+<<<<<<< HEAD
         throw new Error("Sem rota disponivel");
       }
 
@@ -412,20 +617,40 @@ function initMapInteractions() {
         color: "#2f7fff",
         weight: 5,
         opacity: 0.9,
+=======
+        throw new Error('Sem rota disponivel');
+      }
+
+      const route = data.routes[0];
+      const latlngs = route.geometry.coordinates.map((coordinate) => [coordinate[1], coordinate[0]]);
+
+      clearRoute();
+      routeLayer = L.polyline(latlngs, {
+        color: '#2f7fff',
+        weight: 5,
+        opacity: 0.9
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       }).addTo(map);
 
       map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
       lastRouteSummary = `rota ${formatRouteDistance(route.distance)} • ${formatRouteDuration(route.duration)}`;
       selectShop(selectedShop, { focus: false });
     } catch (error) {
+<<<<<<< HEAD
       lastRouteSummary = "";
       selectShop(selectedShop, { focus: false });
       shopInfo.textContent =
         "Nao foi possivel gerar a rota agora. Tente novamente.";
+=======
+      lastRouteSummary = '';
+      selectShop(selectedShop, { focus: false });
+      shopInfo.textContent = 'Nao foi possivel gerar a rota agora. Tente novamente.';
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     }
   }
 
   function findShopFromQuery() {
+<<<<<<< HEAD
     const queryShopName = params.get("shop");
     const destination = params.get("dest");
 
@@ -433,18 +658,33 @@ function initMapInteractions() {
       const matchByName = shops.find(
         (shop) => shop.name.toLowerCase() === queryShopName.toLowerCase(),
       );
+=======
+    const queryShopName = params.get('shop');
+    const destination = params.get('dest');
+
+    if (queryShopName) {
+      const matchByName = shops.find((shop) => shop.name.toLowerCase() === queryShopName.toLowerCase());
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       if (matchByName) return matchByName;
     }
 
     if (destination) {
+<<<<<<< HEAD
       const [latText, lngText] = destination.split(",");
+=======
+      const [latText, lngText] = destination.split(',');
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       const lat = Number(latText);
       const lng = Number(lngText);
 
       if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+<<<<<<< HEAD
         const matchByCoordinate = shops.find(
           (shop) => shop.latlng[0] === lat && shop.latlng[1] === lng,
         );
+=======
+        const matchByCoordinate = shops.find((shop) => shop.latlng[0] === lat && shop.latlng[1] === lng);
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
         if (matchByCoordinate) return matchByCoordinate;
       }
     }
@@ -453,7 +693,11 @@ function initMapInteractions() {
   }
 
   if (locateButton) {
+<<<<<<< HEAD
     locateButton.addEventListener("click", async () => {
+=======
+    locateButton.addEventListener('click', async () => {
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       const located = await locateUser();
       if (located) {
         selectNearestVisibleShop();
@@ -462,12 +706,20 @@ function initMapInteractions() {
   }
 
   if (routeButton) {
+<<<<<<< HEAD
     routeButton.addEventListener("click", () => {
+=======
+    routeButton.addEventListener('click', () => {
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
       drawRouteToSelectedShop();
     });
   }
 
+<<<<<<< HEAD
   applyFilter("todos");
+=======
+  applyFilter('todos');
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   const preferredShop = findShopFromQuery();
   if (preferredShop) {
     selectShop(preferredShop, { focus: true });
@@ -475,12 +727,17 @@ function initMapInteractions() {
     selectNearestVisibleShop();
   }
 
+<<<<<<< HEAD
   if (params.get("route") === "1") {
+=======
+  if (params.get('route') === '1') {
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
     drawRouteToSelectedShop();
   }
 }
 
 function initBookingForm() {
+<<<<<<< HEAD
   const form = document.getElementById("booking-form");
   const serviceInput = document.getElementById("servico");
   if (!form || !serviceInput) return;
@@ -500,6 +757,26 @@ function initBookingForm() {
       `Horario: ${formData.get("horario")}`,
       `Veiculo: ${formData.get("veiculo")}`,
     ].join("\n");
+=======
+  const form = document.getElementById('booking-form');
+  const serviceInput = document.getElementById('servico');
+  if (!form || !serviceInput) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const selectedService = params.get('servico') || 'Lavagem completa';
+  serviceInput.value = selectedService;
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const summary = [
+      `Servico: ${formData.get('servico')}`,
+      `Data: ${formData.get('data')}`,
+      `Horario: ${formData.get('horario')}`,
+      `Veiculo: ${formData.get('veiculo')}`,
+    ].join('\n');
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
 
     alert(`Agendamento confirmado com sucesso.\n\n${summary}`);
     form.reset();
@@ -507,6 +784,7 @@ function initBookingForm() {
   });
 }
 
+<<<<<<< HEAD
 function initReviewsPage() {
   const reviewsTitle = document.getElementById("reviews-shop-title");
   const avgStars = document.getElementById("reviews-average-stars");
@@ -986,10 +1264,14 @@ function initAuthPage() {
 }
 
 if (page === "home") {
+=======
+if (page === 'home') {
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
   initCategoryFilter();
   initUseLocation();
 }
 
+<<<<<<< HEAD
 if (page === "mapa") {
   initMapInteractions();
 }
@@ -1007,3 +1289,12 @@ if (page === "cadastro") {
 }
 
 initializeAuthRequiredLinks();
+=======
+if (page === 'mapa') {
+  initMapInteractions();
+}
+
+if (page === 'agendamento') {
+  initBookingForm();
+}
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b

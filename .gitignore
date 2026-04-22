@@ -1,3 +1,11 @@
+<<<<<<< HEAD
 node_modules/
 .env
 *.db
+=======
+node_modules
+# Keep environment variables out of version control
+.env
+
+/generated/prisma
+>>>>>>> d9ad1df3fd54b43e3aeda2acaa47786fe5c3887b
