@@ -94,7 +94,11 @@ app.get("/auth/google", (req, res, next) => {
     return;
   }
 
-  passport.authenticate("google", { scope: ["profile", "email"] })(
+  const prompt = req.query.prompt || "select_account";
+  passport.authenticate("google", { 
+    scope: ["profile", "email"],
+    prompt: prompt
+  })(
     req,
     res,
     next,
@@ -110,16 +114,53 @@ app.get("/auth/google/callback", (req, res, next) => {
     return;
   }
 
-  passport.authenticate("google", {
-    failureRedirect: "/cadastro.html?mode=login&auth=google_failed",
-  })(req, res, () => {
-    const user = req.user || {};
-    const name = encodeURIComponent(user.name || "Usuario Google");
-    const email = encodeURIComponent(user.email || "");
-    const next = encodeURIComponent(returnTo);
-    res.redirect(
-      `/cadastro.html?mode=login&auth=success&provider=google&name=${name}&email=${email}&next=${next}`,
-    );
+  passport.authenticate("google", { session: false })(req, res, async (err) => {
+    try {
+      if (err || !req.user) {
+        console.error("Erro na autenticação do Google:", err);
+        res.redirect("/cadastro.html?mode=login&auth=google_failed");
+        return;
+      }
+
+      const user = req.user || {};
+      const email = user.email || "";
+      const name = user.name || "Usuario Google";
+
+      if (!email) {
+        res.redirect("/cadastro.html?mode=login&auth=google_failed");
+        return;
+      }
+
+      // Tenta encontrar usuário existente
+      let dbUser = await prisma.usuario.findUnique({ where: { email } });
+
+      // Se não existe, cria novo usuário (sem CPF e telefone, preenchidos com placeholders)
+      if (!dbUser) {
+        dbUser = await prisma.usuario.create({
+          data: {
+            nome: name,
+            email,
+            cpf: `google_${user.id}`, // CPF único baseado no ID do Google
+            telefone: "N/A",
+            senha: `google_oauth_${user.id}`, // Senha placeholder (não será usada)
+          },
+        });
+      }
+
+      req.session.userId = dbUser.id;
+      const token = gerarToken(dbUser);
+
+      const encodedName = encodeURIComponent(dbUser.nome);
+      const encodedEmail = encodeURIComponent(dbUser.email);
+      const nextEncoded = encodeURIComponent(returnTo);
+
+      res.redirect(
+        `/cadastro.html?mode=login&auth=success&provider=google&name=${encodedName}&email=${encodedEmail}&token=${token}&next=${nextEncoded}`,
+      );
+    } catch (err) {
+      console.error("Erro ao processar callback do Google:", err);
+      res.redirect("/cadastro.html?mode=login&auth=google_failed");
+    }
   });
 });
 
@@ -148,30 +189,38 @@ app.use(express.json());
 
 // ── Cadastro ──
 app.post("/api/auth/signup", async (req, res) => {
+  console.log("Recebendo requisição de cadastro:", req.body);
   try {
     const { nome, email, cpf, telefone, senha } = req.body;
 
     if (!nome || !email || !cpf || !telefone || !senha) {
+      console.log("Campos obrigatórios faltando");
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios." });
     }
 
+    console.log("Verificando usuário existente...");
     const existente = await prisma.usuario.findFirst({
       where: { OR: [{ email }, { cpf }] },
     });
 
     if (existente) {
+      console.log("Usuário já existe:", existente);
       return res
         .status(409)
         .json({ error: "Já existe um cadastro com este email ou CPF." });
     }
 
+    console.log("Criando hash da senha...");
     const senhaHash = await bcrypt.hash(senha, 10);
 
+    console.log("Criando usuário no banco...");
     const usuario = await prisma.usuario.create({
       data: { nome, email, cpf, telefone, senha: senhaHash },
     });
+
+    console.log("Usuário criado:", usuario);
 
     req.session.userId = usuario.id;
     const token = gerarToken(usuario);

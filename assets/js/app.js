@@ -811,7 +811,14 @@ function initAuthPage() {
       const email = String(params.get("email") || "")
         .trim()
         .toLowerCase();
-      upsertGoogleUser(name, email);
+      const token = params.get("token");
+
+      // Salva o usuário com o token do backend
+      setCurrentUser(
+        { name, email, authProvider: "google" },
+        token || undefined
+      );
+
       alert("Login com Google realizado com sucesso.");
       window.history.replaceState({}, "", "cadastro.html");
       window.location.href = normalizedNextUrl();
@@ -976,7 +983,7 @@ function initAuthPage() {
 
   function startGoogleAuth() {
     const nextUrl = encodeURIComponent(normalizedNextUrl());
-    window.location.href = `/auth/google?next=${nextUrl}`;
+    window.location.href = `/auth/google?next=${nextUrl}&prompt=select_account`;
   }
 
   googleSignupButton.addEventListener("click", startGoogleAuth);
